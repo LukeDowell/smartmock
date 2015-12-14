@@ -1,5 +1,7 @@
 package com.nerdery.smartcarte.server;
 
+import com.nerdery.smartcarte.shared.data.Command;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -24,42 +26,64 @@ public class SmartServer {
     public SmartServer() throws IOException {
         // Create the datagram socket
         serverSocket = new DatagramSocket(SERVER_PORT);
-        execute();
+        listen();
     }
 
-    private void execute() throws IOException {
-
+    /**
+     * Sets the server in a continual loop. The server will listen for any messages coming in
+     * and attempt to execute on them.
+     *
+     * TODO: Sanitize incoming messages
+     */
+    private void listen() {
         System.out.println("Server listening on port: " + SERVER_PORT);
-
         while(!Thread.currentThread().isInterrupted()) {
 
-            // Is this just a container that the data is written to?
-            byte[] receivedData = new byte[256];
+            // Create a message recepticle
+            byte[] messageBuffer = new byte[256];
+            DatagramPacket messagePacket = new DatagramPacket(messageBuffer, messageBuffer.length);
 
+            try {
+                serverSocket.receive(messagePacket);
 
-            // Build the incoming packet
-            DatagramPacket receivedPacket = new DatagramPacket(receivedData, receivedData.length);
+                // Get the length of the message
+                byte[] messageData = messagePacket.getData();
+                int length = messageData[0];
+                byte[] message = new byte[length];
 
-            // Wait until a packet comes in
-            serverSocket.receive(receivedPacket);
+                // Trim the message down
+                System.arraycopy(messageData, 0, message, 0, length);
 
-            // Store the address from which we received the packet
-            InetAddress clientAddress = receivedPacket.getAddress();
+                // Set up response array
+                byte[] response;
 
-            // This is a deceptively important step
-            // If you don't pull the client's port, the server will send messages back to itself over and over
-            int clientPort = receivedPacket.getPort();
+                // Complete the checksum verification
+                if(validChecksum(message)) {
+                    response = CommandController.process(message);
+                } else {
+                    response = Command.packageCommand(Command.CHECKSUM_FAILED);
+                }
 
-            // Convert the byte array to a string. Without the 2nd and 3rd arguments, all the empty bytes are displayed
-            String clientMessage = new String(receivedPacket.getData(), 0, receivedPacket.getLength());
+                InetAddress clientAddress = messagePacket.getAddress();
+                int port = messagePacket.getPort();
 
-            System.out.println("Received packet from : " + clientAddress);
-            System.out.println("Data's message: " + clientMessage);
+                DatagramPacket responsePacket = new DatagramPacket(response, response.length, clientAddress, port);
+                serverSocket.send(responsePacket);
 
-            byte[] response = "HELLO".getBytes();
-
-            DatagramPacket responsePacket = new DatagramPacket(response, response.length, clientAddress, clientPort);
-            serverSocket.send(responsePacket);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    /**
+     * Checks to see if the checksum passes on a received message
+     * @param message
+     *      The message to check
+     * @return
+     *      True if passed, false otherwise
+     */
+    private boolean validChecksum(byte[] message) {
+        return true;
     }
 }

@@ -1,5 +1,7 @@
 package com.nerdery.smartcarte.client;
 
+import com.nerdery.smartcarte.shared.data.Command;
+
 import java.io.IOException;
 import java.net.*;
 
@@ -13,54 +15,73 @@ public class SmartClient {
 
     /** The server's port */
     public static final int SERVER_PORT = 8008;
+    public static final int CLIENT_PORT = 7007;
 
     /** How long in milliseconds we will wait before timing out */
     public static final int TIMEOUT = 10000;
 
     /** Client's socket connection */
-    private DatagramSocket clientSocket;
+    private DatagramSocket writeSocket;
+    private DatagramSocket readSocket;
+
+    /** The server's inet address */
+    private InetAddress serverAddress;
 
     public SmartClient() throws IOException {
 
-        // Create the socket
-        clientSocket = new DatagramSocket();
-        sendMessage("Hello!");
+        // Create the inetaddress
+        serverAddress = InetAddress.getByName(SERVER_HOST);
+
+        readSocket = new DatagramSocket(CLIENT_PORT);
+        writeSocket = new DatagramSocket();
+
+        // TODO: Move
+        new Thread(() -> {
+            while(!Thread.currentThread().isInterrupted()) {
+
+                // Create the response buffer
+                byte[] responseBuffer = new byte[256];
+
+                // Create the response packet
+                DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+
+                try {
+
+                    readSocket.receive(responsePacket);
+                    System.out.println("Message received: "  + new String(responsePacket.getData()));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+
+        sendMessage(Command.packageCommand(Command.ALL_DOOR_STATUS));
     }
 
     /**
-     * Attempts to establish a connection to the server
-     *
-     * @throws UnknownHostException
+     * Attempts to send a message to the server
+     * @param message
+     *      The command message to send
      */
-    public void sendMessage(String message) throws IOException {
+    public boolean sendMessage(byte[] message) {
+        System.out.println("Sending message: ");
+        for(byte b : message) {
+            System.out.print(b);
+        }
+        System.out.println("");
 
-        System.out.println("Trying to establish a connection to : " + SERVER_HOST + " : " + SERVER_PORT);
-
-        byte[] messageData = message.getBytes();
-        byte[] responseData = new byte[256];
-
-        // Create the hosts inetaddress
-        InetAddress hostAddress = InetAddress.getByName(SERVER_HOST);
-
-        // Construct the packet to send
-        DatagramPacket messagePacket = new DatagramPacket(messageData, messageData.length, hostAddress, SERVER_PORT);
-
-        // Send the message
-        clientSocket.send(messagePacket);
-        System.out.println("Message sent! \n");
-
-        // Create a response receptacle
-        DatagramPacket responsePacket = new DatagramPacket(responseData, responseData.length);
-        System.out.println("Waiting for response...");
-
-        clientSocket.setSoTimeout(TIMEOUT);
+        // Build the packet we are going to send
+        DatagramPacket messagePacket = new DatagramPacket(message, 0, message.length, serverAddress, SERVER_PORT);
 
         try {
 
-            clientSocket.receive(responsePacket);
-            System.out.println("Received response: " + new String(responsePacket.getData(), 0, responsePacket.getLength()));
-        } catch (SocketTimeoutException e) {
-            System.err.println("Connection timed out.");
+            writeSocket.send(messagePacket);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
         }
+        return true;
     }
 }

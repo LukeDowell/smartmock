@@ -12,8 +12,9 @@ public class ServerMain {
 
     public static void main(String[] args) {
         try {
+            Class.forName("com.nerdery.smartcarte.server.data.CartCorral");
             new SmartServer();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
