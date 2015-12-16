@@ -1,17 +1,11 @@
 package org.lukedowell.carte.server.handler;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTextMessage;
 import org.lukedowell.carte.shared.MessageBrokerConfiguration;
 import org.lukedowell.carte.shared.Network;
 
-import javax.jms.Connection;
-import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Session;
 import java.net.SocketAddress;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 /**
  * Created by ldowell on 12/16/15.

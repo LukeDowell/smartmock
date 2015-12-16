@@ -4,7 +4,6 @@ import org.lukedowell.carte.shared.Command;
 import org.lukedowell.carte.shared.Network;
 
 import java.io.IOException;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;

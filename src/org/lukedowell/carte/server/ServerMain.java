@@ -1,9 +1,7 @@
 package org.lukedowell.carte.server;
 
-import org.lukedowell.carte.server.data.ChaosCart;
 import org.lukedowell.carte.server.data.CartCorral;
-
-import java.io.IOException;
+import org.lukedowell.carte.server.data.ChaosCart;
 
 /**
  * Created by ldowell on 12/16/15.
