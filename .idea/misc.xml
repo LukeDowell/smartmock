@@ -4,7 +4,6 @@
     <entry_points version="2.0" />
   </component>
   <component name="Osmorc">
-    <option name="bndAutoImport" value="true" />
     <option name="bundlesOutputPath" value="$PROJECT_DIR$/out/bundles" />
     <option name="frameworkInstanceName" value="Knopflerfish" />
   </component>

@@ -1,2 +1,0 @@
-Bundle-Activator: org.lukedowell.carte.ui.UIActivator
-Import-Package: org.osgi.framework

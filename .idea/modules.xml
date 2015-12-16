@@ -3,10 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SmartCarte.iml" filepath="$PROJECT_DIR$/SmartCarte.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SmartClient/SmartClient.iml" filepath="$PROJECT_DIR$/SmartClient/SmartClient.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SmartServer/SmartServer.iml" filepath="$PROJECT_DIR$/SmartServer/SmartServer.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SmartShared/SmartShared.iml" filepath="$PROJECT_DIR$/SmartShared/SmartShared.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SmartUI/SmartUI.iml" filepath="$PROJECT_DIR$/SmartUI/SmartUI.iml" />
     </modules>
   </component>
 </project>
