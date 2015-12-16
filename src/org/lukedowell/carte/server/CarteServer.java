@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 /**
  * Created by ldowell on 12/16/15.
  */
-public class CarteServer implements MessageListener{
+public class CarteServer {
 
     /** The number of threads to allocate to our executor service */
     public static final int POOL_SIZE = 5;
@@ -32,16 +32,11 @@ public class CarteServer implements MessageListener{
     /** Thread pool */
     private final ExecutorService pool;
 
-    private Collection<SocketAddress> clients;
-
     public CarteServer() throws IOException {
         channel = DatagramChannel.open();
         channel.socket().bind(new InetSocketAddress(Network.SERVER_PORT));
 
         pool = Executors.newFixedThreadPool(POOL_SIZE);
-
-        clients = new ArrayList<>();
-
         listen();
     }
 
@@ -57,31 +52,10 @@ public class CarteServer implements MessageListener{
                 // Receive a message
                 SocketAddress sender = channel.receive(buffer);
 
-                // If we haven't registered this person, do so
-                if(!clients.contains(sender)) {
-                    clients.add(sender);
-                }
-
                 // Pass to handler
                 pool.execute(new MessageHandler(buffer, sender));
             }
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onMessage(Message message) {
-        try {
-            if(message instanceof TextMessage) {
-                String messageText = ((TextMessage) message).getText();
-                ByteBuffer messageBuffer = ByteBuffer.wrap(messageText.getBytes());
-
-                for(SocketAddress client : clients) {
-                    channel.send(messageBuffer, client);
-                }
-            }
-        } catch(Exception e) {
             e.printStackTrace();
         }
     }
