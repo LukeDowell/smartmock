@@ -12,6 +12,7 @@ public class Network {
     public static final String SERVER_HOST = "127.0.0.1";
     public static final String MESSAGE_HOST = "vm://localhost";
     public static final String QUEUE_NAME = "CART.EVENTS";
+    public static final int BUFFER_SIZE = 32;
 
 
     /**

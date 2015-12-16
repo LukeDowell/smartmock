@@ -1,11 +1,10 @@
 package org.lukedowell.carte.server.data;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
-import org.lukedowell.carte.shared.Command;
+
+import org.lukedowell.carte.shared.MessageBrokerConfiguration;
 import org.lukedowell.carte.shared.Network;
 
 import javax.jms.*;
-import java.awt.*;
 
 /**
  * Created by ldowell on 12/16/15.
@@ -24,16 +23,9 @@ public class ChaosCart implements Runnable {
      *
      */
     public ChaosCart() throws JMSException {
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(Network.MESSAGE_HOST);
-
-        Connection connection = connectionFactory.createConnection();
-        connection.start();
-
-        this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
+        session = MessageBrokerConfiguration.getSession();
         Destination dest = session.createQueue(Network.QUEUE_NAME);
-
-        this.messageProducer = session.createProducer(dest);
+        messageProducer = session.createProducer(dest);
         messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
     }
 
@@ -48,7 +40,6 @@ public class ChaosCart implements Runnable {
 
                     messageProducer.send(textMessage);
 
-                    System.out.println("Message sent");
                     Thread.sleep(SLEEP_TIME);
                 }
             } catch(Exception e) {

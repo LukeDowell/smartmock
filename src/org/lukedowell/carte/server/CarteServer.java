@@ -26,9 +26,6 @@ public class CarteServer implements MessageListener{
     /** The number of threads to allocate to our executor service */
     public static final int POOL_SIZE = 5;
 
-    /** The maximum number of bytes our channel can receive at once */
-    public static final int BUFFER_SIZE = 128;
-
     /** The listener */
     private DatagramChannel channel;
 
@@ -54,7 +51,7 @@ public class CarteServer implements MessageListener{
             while(!Thread.currentThread().isInterrupted()) {
 
                 // Set up the buffer
-                ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
+                ByteBuffer buffer = ByteBuffer.allocate(Network.BUFFER_SIZE);
                 buffer.clear();
 
                 // Receive a message

@@ -1,8 +1,7 @@
 package org.lukedowell.carte.server.data;
 
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.lukedowell.carte.shared.Command;
-import org.lukedowell.carte.shared.Network;
+import org.lukedowell.carte.shared.MessageBrokerConfiguration;
 
 import javax.jms.*;
 
@@ -29,7 +28,7 @@ public class CartCorral implements MessageListener {
      */
     public CartCorral() throws JMSException {
         initializeData();
-        establishMessagingConnection();
+        MessageBrokerConfiguration.getConsumer().setMessageListener(this);
         System.out.println("Cart Corral Initialized");
     }
 
@@ -60,21 +59,6 @@ public class CartCorral implements MessageListener {
             e.printStackTrace();
 
         }
-    }
-
-    /**
-     * Sets up our connection to the message broker
-     */
-    private void establishMessagingConnection() throws JMSException {
-        //TODO: Exception handling
-        ActiveMQConnectionFactory connectionFactory = new ActiveMQConnectionFactory(Network.MESSAGE_HOST);
-        Connection connection = connectionFactory.createConnection();
-        connection.start();
-
-        Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-        Destination destination = session.createQueue(Network.QUEUE_NAME);
-        session.createConsumer(destination).setMessageListener(this);
     }
 
     /**
