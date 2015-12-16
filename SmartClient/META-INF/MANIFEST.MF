@@ -1,0 +1,2 @@
+Bundle-Activator: org.lukedowell.carte.client.ClientActivator
+Import-Package: org.osgi.framework
